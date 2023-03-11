@@ -53,11 +53,6 @@ func run(pass *analysis.Pass) (any, error) {
 
 			case *ast.AssignStmt:
 				for _, lhs := range node.Lhs {
-					lhs, ok := lhs.(*ast.SelectorExpr)
-					if !ok {
-						continue
-					}
-
 					check(pass, lhs, "cannot assign")
 				}
 
