@@ -54,7 +54,7 @@ func run(pass *analysis.Pass) (any, error) {
 				typ := pass.TypesInfo.TypeOf(node.Type)
 
 				if _, ok := typ.(*types.Pointer); ok {
-					pass.Reportf(node.Type.Pos(), "cannot define visibility of pointer types")
+					pass.Reportf(node.Type.Pos(), "cannot define %s of pointer types", visTag)
 				}
 
 			case *ast.AssignStmt:
@@ -124,8 +124,18 @@ func check(pass *analysis.Pass, node ast.Expr, message string) {
 		return
 	}
 
+	checkFields(pass, node.Pos(), str, sel.Obj().Name(), message)
+}
+
+func checkFields(pass *analysis.Pass, pos token.Pos, str *types.Struct, field, message string) {
 	for i := 0; i < str.NumFields(); i++ {
-		if str.Field(i).Name() != sel.Obj().Name() {
+		if str.Field(i).Embedded() {
+			if embedded, ok := str.Field(i).Type().Underlying().(*types.Struct); ok {
+				checkFields(pass, pos, embedded, field, message)
+			}
+		}
+
+		if str.Field(i).Name() != field {
 			continue
 		}
 
@@ -136,12 +146,10 @@ func check(pass *analysis.Pass, node ast.Expr, message string) {
 
 		switch tag {
 		case visReadonly:
-			pass.Reportf(expr.Pos(), "misuse of %s field: %s", tag, message)
+			pass.Reportf(pos, "misuse of %s field: %s", tag, message)
 
 		default:
 			pass.Reportf(str.Field(i).Pos(), "invalid %s tag: %q", visTag, tag)
 		}
 	}
-
-	return
 }

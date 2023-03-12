@@ -32,4 +32,10 @@ type Embedded struct {
 func _() {
 	e := Embedded{}
 	e.Age = 100 // want `misuse of readonly field: cannot assign`
+	e.SetAge(200)
+	e.SetAge2(300)
+}
+
+func (e *Embedded) SetAge2(age int) {
+	e.Age = age
 }
