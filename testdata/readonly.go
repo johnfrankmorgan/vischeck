@@ -24,3 +24,12 @@ func _() {
 
 	x.m.Age = 1 // want `misuse of readonly field: cannot assign`
 }
+
+type Embedded struct {
+	MyStruct
+}
+
+func _() {
+	e := Embedded{}
+	e.Age = 100 // want `misuse of readonly field: cannot assign`
+}
