@@ -1,4 +1,4 @@
-.PHONY: build clean test
+.PHONY: build clean lint test
 
 build:
 	go build -o build/vischeck ./cmd/vischeck
@@ -6,6 +6,9 @@ build:
 
 clean:
 	rm -rf build
+
+lint:
+	go vet ./...
 
 test:
 	go test -coverpkg=./... -coverprofile=/tmp/vischeck.coverage.out ./...
