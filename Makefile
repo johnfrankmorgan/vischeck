@@ -5,11 +5,16 @@ build:
 	go build -buildmode=plugin ./plugin
 
 clean:
-	rm -rf build
+	rm -rf build tmp
 
 lint:
 	go vet ./...
 
 test:
-	go test -coverpkg=./... -coverprofile=/tmp/vischeck.coverage.out ./...
-	go tool cover -func=/tmp/vischeck.coverage.out
+	mkdir -p tmp
+	go test -coverpkg=./... -coverprofile=tmp/vischeck.coverage.out ./...
+	go tool cover -func=tmp/vischeck.coverage.out
+
+test-html: test
+	go tool cover -html=tmp/vischeck.coverage.out -o tmp/vischeck.coverage.html
+	open tmp/vischeck.coverage.html

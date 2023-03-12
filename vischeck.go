@@ -42,10 +42,19 @@ func run(pass *analysis.Pass) (any, error) {
 				}
 
 				tag, _ := strconv.Unquote(node.Tag.Value)
-				vis := reflect.StructTag(tag).Get(visTag)
+				vis, ok := reflect.StructTag(tag).Lookup(visTag)
+				if !ok {
+					break
+				}
 
 				if !visibility(vis).valid() {
 					pass.Reportf(node.Tag.Pos(), "invalid %s tag: %q", visTag, vis)
+				}
+
+				typ := pass.TypesInfo.TypeOf(node.Type)
+
+				if _, ok := typ.(*types.Pointer); ok {
+					pass.Reportf(node.Type.Pos(), "cannot define visibility of pointer types")
 				}
 
 			case *ast.AssignStmt:
@@ -87,24 +96,17 @@ func check(pass *analysis.Pass, node ast.Expr, message string) {
 
 	var typ *types.Named
 
-	switch val := sel.Recv().(type) {
+	switch recv := sel.Recv().(type) {
 	case *types.Named:
-		typ = val
+		typ = recv
 
 	case *types.Pointer:
-		// dereference type until it's not a pointer
-		for typ == nil {
-			switch t := val.Elem().(type) {
-			case *types.Pointer:
-				val = t
-
-			case *types.Named:
-				typ = t
-
-			default:
-				return
-			}
+		t, ok := recv.Elem().(*types.Named)
+		if !ok {
+			return
 		}
+
+		typ = t
 
 	default:
 		return
