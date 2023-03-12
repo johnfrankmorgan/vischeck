@@ -40,6 +40,8 @@ defined on their containing type.
 
 * Fields stored as a pointer type cannot be checked, instead `vischeck` will
   emit an error indicating that the field type is invalid.
+* Structs embedding structs with visibility rules defined can freely modify the
+  embedded fields.
 * Struct literals are not yet checked.
 
 
