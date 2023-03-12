@@ -1,0 +1,9 @@
+linters:
+  disable-all: true
+  enable:
+    - vischeck
+
+linters-settings:
+  custom:
+    vischeck:
+      path: build/vischeck.so

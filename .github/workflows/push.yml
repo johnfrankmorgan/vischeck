@@ -34,4 +34,10 @@ jobs:
           go-version: stable
 
       - name: Build
-        run: make build
+        run: |
+          make build
+
+          # check golangci-lint can successfully load vischeck.so
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+          echo package main > /tmp/dummy.go
+          golangci-lint run --config=example.golangci.yaml /tmp/dummy.go
