@@ -2,7 +2,7 @@
 
 build:
 	go build -o build/vischeck ./cmd/vischeck
-	go build -buildmode=plugin ./plugin
+	go build -buildmode=plugin -o build/vischeck.so ./plugin
 
 clean:
 	rm -rf build tmp

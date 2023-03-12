@@ -102,3 +102,11 @@ func (status OrderStatus) String() string {
 	return "" // imagine some code here
 }
 ```
+
+
+## Building
+
+To build `vischeck`, simply run `make build`. This will produce a standalone
+binary (`build/vischeck`) and a plugin which can be used with
+[golangci-lint](https://golangci-lint.run/contributing/new-linters/#how-to-add-a-private-linter-to-golangci-lint).
+(`build/vischeck.so`).
